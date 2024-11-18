@@ -1,9 +1,9 @@
-import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
-import { SolanaDevConnection } from "./connection/solana-dev-connection";
-import { EnvironmentVariableUtil } from "./utils/env-var";
-import { KeypairUtil } from "./utils/keypair/keypair.util";
+import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
+import { SolanaDevConnection } from './connection/solana-dev-connection';
+import { EnvironmentVariableUtil } from './utils/env-var';
+import { KeypairUtil } from './utils/keypair/keypair.util';
 
-const privateKeyEnv = EnvironmentVariableUtil.getEnvVar("senderSecretKey");
+const privateKeyEnv = EnvironmentVariableUtil.getEnvVar('senderSecretKey');
 
 const keypair = KeypairUtil.getKeypair(privateKeyEnv);
 

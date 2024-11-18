@@ -1,5 +1,5 @@
-import { envVarKeys } from "./env-var-key";
-import { EnvironmentVariableName, IEnvironmentVariables } from "./env-var.type";
+import { envVarKeys } from './env-var-key';
+import { EnvironmentVariableName, IEnvironmentVariables } from './env-var.type';
 
 export class EnvironmentVariableUtil {
   private envVars: NodeJS.ProcessEnv;
@@ -19,7 +19,7 @@ export class EnvironmentVariableUtil {
 
     Object.entries(envVarKeys).forEach(([label, key]) => {
       const value = this.envVars[key];
-      Object.assign(result, { [label]: value ?? "" });
+      Object.assign(result, { [label]: value ?? '' });
     });
 
     this.envVarDictionary = result;

@@ -3,7 +3,7 @@ import {
   Connection,
   LAMPORTS_PER_SOL,
   PublicKey,
-} from "@solana/web3.js";
+} from '@solana/web3.js';
 
 export class SolanaDevConnection {
   public connection: Connection;
@@ -11,7 +11,7 @@ export class SolanaDevConnection {
   private static instance: SolanaDevConnection;
 
   private constructor() {
-    const devnetApiUrl = clusterApiUrl("devnet");
+    const devnetApiUrl = clusterApiUrl('devnet');
 
     this.connection = new Connection(devnetApiUrl);
   }
