@@ -27,7 +27,7 @@ export class TransactionService {
     return this.instance.connection;
   }
 
-  public static async transfer(params: {
+  public static async transferSOL(params: {
     senderPublicKey: PublicKey;
     recipientPublicKey: PublicKey;
     solAmount: number;

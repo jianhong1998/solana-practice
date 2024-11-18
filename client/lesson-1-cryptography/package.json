@@ -1,24 +1,24 @@
 {
-    "name": "lesson-1-cryptography",
-    "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
-    "scripts": {
-        "dev": "nodemon src/index.ts"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "dependencies": {
-        "@solana-developers/helpers": "^2.3.0",
-        "@solana/web3.js": "^1.95.0",
-        "dotenv": "^16.4.5"
-    },
-    "devDependencies": {
-        "@types/dotenv": "^8.2.0",
-        "@types/node": "^20.14.10",
-        "nodemon": "^3.1.4",
-        "ts-node": "^10.9.2",
-        "typescript": "^5.5.3"
-    }
+  "name": "lesson-1-cryptography",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@solana-developers/helpers": "^2.3.0",
+    "@solana/web3.js": "^1.95.0",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/dotenv": "^8.2.0",
+    "@types/node": "^20.14.10",
+    "nodemon": "^3.1.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.3"
+  }
 }

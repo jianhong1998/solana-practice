@@ -1,9 +1,9 @@
-import { Keypair } from '@solana/web3.js';
+import { Keypair } from "@solana/web3.js";
 
 export class KeypairUtil {
-    private constructor() {}
+  private constructor() {}
 
-    public static generateKeypair() {
-        return Keypair.generate();
-    }
+  public static generateKeypair() {
+    return Keypair.generate();
+  }
 }
