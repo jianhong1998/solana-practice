@@ -1,24 +1,36 @@
-import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { SolanaDevConnection } from './connection/solana-dev-connection';
-import { EnvironmentVariableUtil } from './utils/env-var';
-import { KeypairUtil } from './utils/keypair/keypair.util';
+import { AirdropUtil, BalanceUtil, PingUtil } from './utils/transaction';
+import { SENDER_KEYPAIR } from './constants';
 
-const privateKeyEnv = EnvironmentVariableUtil.getEnvVar('senderSecretKey');
+const main = async () => {
+  const connection = SolanaDevConnection.getConnection();
 
-const keypair = KeypairUtil.getKeypair(privateKeyEnv);
+  const currentBalance = await new BalanceUtil(connection).getBalance(
+    SENDER_KEYPAIR.publicKey,
+  );
 
-const privateKey = keypair.secretKey.toString();
-const publicKey = keypair.publicKey.toBase58();
-
-console.log({ privateKey, publicKey: keypair.publicKey.toBase58() });
-
-SolanaDevConnection.getConnection()
-  .getBalance(new PublicKey(publicKey))
-  .then((balanceInLamport) => {
-    console.log({
-      balance: {
-        lamport: balanceInLamport,
-        sol: balanceInLamport / LAMPORTS_PER_SOL,
-      },
-    });
+  console.log({
+    sender: {
+      privateKey: Buffer.from(SENDER_KEYPAIR.secretKey).toString('hex'),
+      publicKey: SENDER_KEYPAIR.publicKey.toBase58(),
+    },
+    currentBalance,
   });
+
+  // Request Airdrop if current balance is less than 1
+  if (currentBalance.sol < 1) {
+    console.log(
+      `Current balance is less than 1 SOL (${currentBalance.sol} SOL). Requesting for Airdrop...`,
+    );
+
+    const airdropUtil = new AirdropUtil(connection);
+    airdropUtil.requestAirdrop({
+      amountInSol: 1,
+      recipientPublicKey: SENDER_KEYPAIR.publicKey,
+    });
+  }
+
+  await new PingUtil(connection).test(SENDER_KEYPAIR);
+};
+
+main();
