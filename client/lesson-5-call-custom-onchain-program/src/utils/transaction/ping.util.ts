@@ -1,5 +1,6 @@
 import {
   Connection,
+  GetVersionedTransactionConfig,
   Keypair,
   PublicKey,
   sendAndConfirmTransaction,
@@ -41,5 +42,7 @@ export class PingUtil {
     console.log(
       `Transaction for Ping Program is created: https://explorer.solana.com/tx/${signature}?cluster=devnet`,
     );
+
+    return { signature };
   }
 }

@@ -1,5 +1,10 @@
 import { SolanaDevConnection } from './connection/solana-dev-connection';
-import { AirdropUtil, BalanceUtil, PingUtil } from './utils/transaction';
+import {
+  AirdropUtil,
+  BalanceUtil,
+  PingUtil,
+  TransactionUtil,
+} from './utils/transaction';
 import { SENDER_KEYPAIR } from './constants';
 
 const main = async () => {
@@ -30,7 +35,9 @@ const main = async () => {
     });
   }
 
-  await new PingUtil(connection).test(SENDER_KEYPAIR);
+  const { signature: transactionSignature } = await new PingUtil(
+    connection,
+  ).test(SENDER_KEYPAIR);
 };
 
 main();
