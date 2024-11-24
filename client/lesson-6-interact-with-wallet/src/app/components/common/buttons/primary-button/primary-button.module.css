@@ -1,0 +1,13 @@
+.primary-button {
+  border-color: rgb(19, 67, 244);
+  background-color: rgb(108, 255, 255);
+  color: rgb(19, 67, 244);
+
+  border-radius: 14px;
+  border-width: 2px;
+  border-style: solid;
+
+  padding: 0.5rem 1rem;
+
+  font-weight: 700;
+}

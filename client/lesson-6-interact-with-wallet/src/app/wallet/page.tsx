@@ -1,21 +1,34 @@
 'use client';
 
-import WalletWrapper from '../components/wallet-wrapper';
-import { AppMode } from '@/enums';
-import { useWallet } from '@solana/wallet-adapter-react';
+import {
+  WalletModalProvider,
+  WalletMultiButton,
+} from '@solana/wallet-adapter-react-ui';
+import '@solana/wallet-adapter-react-ui/styles.css';
+
 import { NextPage } from 'next';
+import { redirect } from 'next/navigation';
+import PrimaryButton from '../components/common/buttons/primary-button';
 
 const WalletPage: NextPage = () => {
-  const appMode = AppMode.DEV;
-
-  const wallet = useWallet();
-
-  console.log(wallet);
-
   return (
-    <WalletWrapper appMode={appMode}>
-      <h1>Wallet Page</h1>
-    </WalletWrapper>
+    <>
+      <div>
+        <WalletModalProvider>
+          <WalletMultiButton />
+        </WalletModalProvider>
+      </div>
+      <div>
+        <PrimaryButton onClick={() => redirect('/wallet/airdrop')}>
+          Request Airdrop
+        </PrimaryButton>
+      </div>
+      <div>
+        <PrimaryButton onClick={() => redirect('/wallet/transfer')}>
+          Transfer SOL
+        </PrimaryButton>
+      </div>
+    </>
   );
 };
 
