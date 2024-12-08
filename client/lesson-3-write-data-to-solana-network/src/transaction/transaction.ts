@@ -7,9 +7,9 @@ import {
   Signer,
   SystemProgram,
   Transaction,
-} from "@solana/web3.js";
-import { SolanaDevConnection } from "../connection/solana-dev-connection";
-import { airdropIfRequired } from "@solana-developers/helpers";
+} from '@solana/web3.js';
+import { SolanaDevConnection } from '../connection/solana-dev-connection';
+import { airdropIfRequired } from '@solana-developers/helpers';
 
 export class TransactionService {
   public connection: Connection;
@@ -49,22 +49,23 @@ export class TransactionService {
     const signature = await sendAndConfirmTransaction(
       this.getConnection(),
       transaction,
-      signerKeypairs,
+      signerKeypairs
     );
 
     return signature;
   }
 
   public static async requestAirDrop(
-    keyPair: Keypair,
+    publicKey: PublicKey,
     requiredSol: number,
     minimumSol: number,
+    connection?: Connection
   ) {
     await airdropIfRequired(
-      this.getConnection(),
-      keyPair.publicKey,
+      connection ?? this.getConnection(),
+      publicKey,
       requiredSol * LAMPORTS_PER_SOL,
-      minimumSol * LAMPORTS_PER_SOL,
+      minimumSol * LAMPORTS_PER_SOL
     );
   }
 }
