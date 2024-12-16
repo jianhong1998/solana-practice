@@ -174,7 +174,7 @@
           "type": "u64"
         },
         {
-          "name": "_candidate_name",
+          "name": "candidate_name",
           "type": "string"
         }
       ]

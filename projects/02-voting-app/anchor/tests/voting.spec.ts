@@ -9,7 +9,7 @@ import { addDays } from 'date-fns';
 const IDL = require('../target/idl/voting.json');
 
 const PROGRAM_PUBLIC_KEY = new PublicKey(
-  'coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF'
+  'BxTzpEszQKmsSQE3YkRQgRrmoTgMRt7pmuby2kGDpKqr'
 );
 
 describe('Voting', () => {
@@ -17,14 +17,20 @@ describe('Voting', () => {
   let provider: BankrunProvider;
   let votingProgram: Program<Voting>;
 
+  const TEST_CANDIDATE_NAME_1 = 'crunchy';
+  const TEST_CANDIDATE_NAME_2 = 'smooth';
+
   beforeAll(async () => {
-    context = await startAnchor(
-      '',
-      [{ name: 'voting', programId: PROGRAM_PUBLIC_KEY }],
-      []
-    );
-    provider = new BankrunProvider(context);
-    votingProgram = new Program<Voting>(IDL, provider);
+    // context = await startAnchor(
+    //   '',
+    //   [{ name: 'voting', programId: PROGRAM_PUBLIC_KEY }],
+    //   []
+    // );
+    // provider = new BankrunProvider(context);
+    // votingProgram = new Program<Voting>(IDL, provider);
+    const provider = anchor.AnchorProvider.env();
+    anchor.setProvider(provider);
+    votingProgram = anchor.workspace.Voting as Program<Voting>;
   });
 
   describe('Initialze Poll', () => {
@@ -60,8 +66,6 @@ describe('Voting', () => {
 
   describe('Initialize Candidate', () => {
     it('should initialize candidate', async () => {
-      const TEST_CANDIDATE_NAME_1 = 'test name 1';
-      const TEST_CANDIDATE_NAME_2 = 'test name 2';
       const TEST_POLL_ID = new anchor.BN(1);
 
       await votingProgram.methods
@@ -110,15 +114,16 @@ describe('Voting', () => {
 
   describe('Vote', () => {
     it('should be able to vote', async () => {
-      const TEST_CANDIDATE_NAME = 'test name 1';
       const TEST_POLL_ID = new anchor.BN(1);
 
-      await votingProgram.methods.vote(TEST_POLL_ID, TEST_CANDIDATE_NAME).rpc();
+      await votingProgram.methods
+        .vote(TEST_POLL_ID, TEST_CANDIDATE_NAME_1)
+        .rpc();
 
       const [candidateAddress] = PublicKey.findProgramAddressSync(
         [
           TEST_POLL_ID.toArrayLike(Buffer, 'le', 8),
-          Buffer.from(TEST_CANDIDATE_NAME),
+          Buffer.from(TEST_CANDIDATE_NAME_1),
         ],
         PROGRAM_PUBLIC_KEY
       );
@@ -126,10 +131,6 @@ describe('Voting', () => {
       const candidate = await votingProgram.account.candidate.fetch(
         candidateAddress
       );
-
-      console.log({
-        candidate,
-      });
 
       expect(candidate.candidateVote.toNumber()).toBe(1);
     });
