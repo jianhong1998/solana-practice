@@ -1,0 +1,19 @@
+# services:
+# solana:
+#   container_name: solana-local-net
+#   build:
+#     dockerfile: Dockerfile.solana-test-validator
+#   network_mode: host
+
+services:
+  solana-test-validator:
+    container_name: solana-local-net
+    image: robojosef/solana-test-validator
+    command: solana-test-validator
+    ports:
+      - '8899:8899'
+      - '8900:8900'
+    volumes:
+      - ./solana-ledger:/test-ledger
+    environment:
+      - RUST_LOG=solana=info

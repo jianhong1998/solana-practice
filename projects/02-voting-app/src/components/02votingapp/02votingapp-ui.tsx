@@ -4,10 +4,10 @@ import { Keypair, PublicKey } from '@solana/web3.js'
 import { useMemo } from 'react'
 import { ellipsify } from '../ui/ui-layout'
 import { ExplorerLink } from '../cluster/cluster-ui'
-import { useVotingappProgram, useVotingappProgramAccount } from './votingapp-data-access'
+import { use02votingappProgram, use02votingappProgramAccount } from './02votingapp-data-access'
 
-export function VotingappCreate() {
-  const { initialize } = useVotingappProgram()
+export function 02votingappCreate() {
+  const { initialize } = use02votingappProgram()
 
   return (
     <button
@@ -20,8 +20,8 @@ export function VotingappCreate() {
   )
 }
 
-export function VotingappList() {
-  const { accounts, getProgramAccount } = useVotingappProgram()
+export function 02votingappList() {
+  const { accounts, getProgramAccount } = use02votingappProgram()
 
   if (getProgramAccount.isLoading) {
     return <span className="loading loading-spinner loading-lg"></span>
@@ -40,7 +40,7 @@ export function VotingappList() {
       ) : accounts.data?.length ? (
         <div className="grid md:grid-cols-2 gap-4">
           {accounts.data?.map((account) => (
-            <VotingappCard key={account.publicKey.toString()} account={account.publicKey} />
+            <02votingappCard key={account.publicKey.toString()} account={account.publicKey} />
           ))}
         </div>
       ) : (
@@ -53,8 +53,8 @@ export function VotingappList() {
   )
 }
 
-function VotingappCard({ account }: { account: PublicKey }) {
-  const { accountQuery, incrementMutation, setMutation, decrementMutation, closeMutation } = useVotingappProgramAccount({
+function 02votingappCard({ account }: { account: PublicKey }) {
+  const { accountQuery, incrementMutation, setMutation, decrementMutation, closeMutation } = use02votingappProgramAccount({
     account,
   })
 

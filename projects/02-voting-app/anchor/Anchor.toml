@@ -6,14 +6,23 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-votingapp = "coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF"
+voting = "BxTzpEszQKmsSQE3YkRQgRrmoTgMRt7pmuby2kGDpKqr"
+
+[programs.devnet]
+voting = "BxTzpEszQKmsSQE3YkRQgRrmoTgMRt7pmuby2kGDpKqr"
 
 [registry]
 url = "https://api.apr.dev"
 
+# LocalNet
 [provider]
 cluster = "Localnet"
-wallet = "~/.config/solana/id.json"
+wallet = "~/.config/solana/local-id.json"
+
+# DevNet
+# [provider]
+# cluster = "Devnet"
+# wallet = "~/.config/solana/devnet-id.json"
 
 [scripts]
 test = "../node_modules/.bin/jest --preset ts-jest"
