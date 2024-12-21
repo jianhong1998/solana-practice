@@ -6,14 +6,14 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-cruddapp = "coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF"
+cruddapp = "Da93sUeitPGg2w9b7G44LSRHDDwVuo2MaCxSuabvXGnc"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
 cluster = "Localnet"
-wallet = "~/.config/solana/id.json"
+wallet = "~/.config/solana/local-id.json"
 
 [scripts]
 test = "../node_modules/.bin/jest --preset ts-jest"

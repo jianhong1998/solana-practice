@@ -20,7 +20,7 @@ services:
     develop:
       watch:
         - path: ./src
-          target: /apps/crud-dapp
+          target: /apps/crud-dapp/src
           action: sync
         - path: ./package.json
           action: rebuild

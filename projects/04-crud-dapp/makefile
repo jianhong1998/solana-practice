@@ -1,4 +1,4 @@
-PROJECT_NAME = "rostering-app"
+PROJECT_NAME = "04-crud-dapp"
 
 up/build:
 	@docker compose \
