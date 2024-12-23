@@ -13,7 +13,7 @@ fn main() {
   println!("Player 1: {:?}", player1);
   println!("Player 2: {:?}", player2);
 
-  let game: Game<'_> = Game { player1, player2 };
+  let game: Game<'_> = Game { player1: &player1, player2: &player2 };
 
   match game.determine_winner() {
     Err(e) => eprintln!("Error: {}", e),

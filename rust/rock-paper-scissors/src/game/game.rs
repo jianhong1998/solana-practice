@@ -3,8 +3,8 @@ use crate::GameOption;
 use std::collections::{HashMap, HashSet};
 
 pub struct Game<'obj> {
-  pub player1: Player<'obj>,
-  pub player2: Player<'obj>,
+  pub player1: &'obj Player<'obj>,
+  pub player2: &'obj Player<'obj>,
 }
 
 impl<'obj> Game<'obj> {
