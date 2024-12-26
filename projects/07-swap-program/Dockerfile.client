@@ -1,0 +1,8 @@
+FROM node:20-slim
+WORKDIR /apps/crud-dapp
+
+COPY ./package*.json ./
+RUN npm ci
+
+COPY . .
+CMD [ "npm", "run", "dev" ]
