@@ -1,47 +1,6 @@
-#[derive(Debug)]
-struct Account {
-  _id: u32,
-  balance: i32,
-  holder: String,
-}
+pub mod models;
 
-impl Account {
-  fn new(id: u32, holder: String) -> Self {
-    Account { _id: id, balance: 0, holder }
-  }
-
-  fn _print(account: &Account) {
-    println!("{:#?}", account);
-  }
-}
-
-#[derive(Debug)]
-struct Bank {
-  accounts: Vec<Account>,
-}
-
-impl Bank {
-  fn new() -> Self {
-    Bank { accounts: vec![] }
-  }
-
-  fn create_account(&mut self, id: u32, holder: String) -> &Account {
-    let account = Account::new(id, holder);
-    self.accounts.push(account);
-
-    let total_account = &self.accounts.len();
-
-    return &self.accounts[total_account - 1];
-  }
-
-  fn print(&self) {
-    println!("{:#?}", self);
-  }
-
-  fn get_account_by_index<'info>(&mut self, index: usize) -> &mut Account {
-    &mut self.accounts[index]
-  }
-}
+pub use models::*;
 
 fn main() {
   let mut bank = Bank::new();
@@ -51,9 +10,16 @@ fn main() {
   bank.create_account(2, name.clone());
   bank.create_account(3, name.clone());
 
-  let account = bank.get_account_by_index(1);
+  let account = bank.get_account_by_index(2);
   account.holder = String::from("Jing Wei");
-  account.balance += 10;
+  let after_deposit = account.deposit(100);
+  let after_withdraw = account.withdraw(10);
 
-  bank.print();
+  println!("After Deposit: {}\nAfter Withdraw: {}", after_deposit, after_withdraw);
+
+  bank.get_account_by_index(0).deposit(500);
+  bank.get_account_by_index(1).deposit(500);
+
+  println!("{:#?}", bank.summary());
+  println!("Bank has total {}", bank.total_balance());
 }
