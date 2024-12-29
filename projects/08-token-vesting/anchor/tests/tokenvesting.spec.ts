@@ -1,76 +1,248 @@
-import * as anchor from '@coral-xyz/anchor'
-import {Program} from '@coral-xyz/anchor'
-import {Keypair} from '@solana/web3.js'
-import {Tokenvesting} from '../target/types/tokenvesting'
+import * as anchor from '@coral-xyz/anchor';
+import { Program, BN } from '@coral-xyz/anchor';
+import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
+import { Tokenvesting } from '../target/types/tokenvesting';
+import {
+  BanksClient,
+  Clock,
+  ProgramTestContext,
+  startAnchor,
+} from 'solana-bankrun';
+import IDL from '../target/idl/tokenvesting.json';
+import { SYSTEM_PROGRAM_ID } from '@coral-xyz/anchor/dist/cjs/native/system';
+import { BankrunProvider } from 'anchor-bankrun';
+import { createMint, mintTo } from 'spl-token-bankrun';
+import NodeWallet from '@coral-xyz/anchor/dist/cjs/nodewallet';
+import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 
 describe('tokenvesting', () => {
-  // Configure the client to use the local cluster.
-  const provider = anchor.AnchorProvider.env()
-  anchor.setProvider(provider)
-  const payer = provider.wallet as anchor.Wallet
+  const COMPANY_NAME = 'valid company name';
 
-  const program = anchor.workspace.Tokenvesting as Program<Tokenvesting>
+  let beneficiaryKeypair: anchor.web3.Keypair;
+  let employerKeypair: anchor.web3.Keypair;
 
-  const tokenvestingKeypair = Keypair.generate()
+  let context: ProgramTestContext;
+  let provider: BankrunProvider;
 
-  it('Initialize Tokenvesting', async () => {
+  let program: Program<Tokenvesting>;
+  let program2: Program<Tokenvesting>;
+
+  let banksClient: BanksClient;
+  let beneficiaryProvider: BankrunProvider;
+
+  let mint: PublicKey;
+  let vestingAccountPublicKey: PublicKey;
+  let treasuryAccountPublicKey: PublicKey;
+  let employeeAccountPublicKey: PublicKey;
+
+  beforeAll(async () => {
+    beneficiaryKeypair = new anchor.web3.Keypair();
+
+    context = await startAnchor(
+      '',
+      [
+        {
+          name: 'tokenvesting', // Same with the fixtures/tokenvesting.so
+          programId: new PublicKey(IDL.address),
+        },
+      ],
+      [
+        {
+          address: beneficiaryKeypair.publicKey,
+          info: {
+            lamports: 1_000_000_000,
+            data: Buffer.alloc(0),
+            owner: SYSTEM_PROGRAM_ID,
+            executable: false,
+          },
+        },
+      ]
+    );
+
+    provider = new BankrunProvider(context);
+    anchor.setProvider(provider);
+
+    program = new Program<Tokenvesting>(IDL as Tokenvesting, provider);
+    banksClient = context.banksClient;
+
+    employerKeypair = provider.wallet.payer;
+
+    mint = await createMint(
+      // @ts-expect-error - Type error in spl-token-bankrun dependancy
+      banksClient,
+      employerKeypair,
+      employerKeypair.publicKey,
+      null,
+      2
+    );
+
+    // Setup Program 2
+
+    beneficiaryProvider = new BankrunProvider(context);
+    beneficiaryProvider.wallet = new NodeWallet(beneficiaryKeypair);
+
+    program2 = new Program<Tokenvesting>(
+      IDL as Tokenvesting,
+      beneficiaryProvider
+    );
+
+    [vestingAccountPublicKey] = PublicKey.findProgramAddressSync(
+      [Buffer.from(COMPANY_NAME)],
+      program.programId
+    );
+
+    [treasuryAccountPublicKey] = PublicKey.findProgramAddressSync(
+      [Buffer.from('vesting_treasury'), Buffer.from(COMPANY_NAME)],
+      program.programId
+    );
+
+    [employeeAccountPublicKey] = PublicKey.findProgramAddressSync(
+      [
+        Buffer.from('employee_vesting'),
+        beneficiaryKeypair.publicKey.toBuffer(),
+        vestingAccountPublicKey.toBuffer(),
+      ],
+      program.programId
+    );
+  });
+
+  it('should create a treasury token account', async () => {
+    const expectedTreasuryTokenAccountPublicKeyString =
+      treasuryAccountPublicKey.toBase58();
+    const expectedMintPublicKeyString = mint.toBase58();
+    const expectedOwnerPublicKeyString = employerKeypair.publicKey.toBase58();
+    const expectedCompanyName = COMPANY_NAME;
+
     await program.methods
-      .initialize()
+      .createVestingAccount(COMPANY_NAME)
       .accounts({
-        tokenvesting: tokenvestingKeypair.publicKey,
-        payer: payer.publicKey,
+        signer: employerKeypair.publicKey,
+        mint,
+        tokenProgram: TOKEN_PROGRAM_ID,
       })
-      .signers([tokenvestingKeypair])
-      .rpc()
+      .rpc({
+        commitment: 'confirmed',
+      });
 
-    const currentCount = await program.account.tokenvesting.fetch(tokenvestingKeypair.publicKey)
+    const vestingAccountData = await program.account.vestingAccount.fetch(
+      vestingAccountPublicKey,
+      'confirmed'
+    );
 
-    expect(currentCount.count).toEqual(0)
-  })
+    expect(vestingAccountData.companyName).toBe(expectedCompanyName);
+    expect(vestingAccountData.treasuryTokenAccount.toBase58()).toBe(
+      expectedTreasuryTokenAccountPublicKeyString
+    );
+    expect(vestingAccountData.mint.toBase58()).toBe(
+      expectedMintPublicKeyString
+    );
+    expect(vestingAccountData.owner.toBase58()).toBe(
+      expectedOwnerPublicKeyString
+    );
 
-  it('Increment Tokenvesting', async () => {
-    await program.methods.increment().accounts({ tokenvesting: tokenvestingKeypair.publicKey }).rpc()
+    const amount = 10_000 * LAMPORTS_PER_SOL;
+    await mintTo(
+      // @ts-expect-error - Type error in spl-token-bankrun dependancy
+      banksClient,
+      employerKeypair,
+      mint,
+      treasuryAccountPublicKey,
+      employerKeypair,
+      amount
+    );
 
-    const currentCount = await program.account.tokenvesting.fetch(tokenvestingKeypair.publicKey)
+    const mintAccountInfo = await program.provider.connection.getAccountInfo(
+      mint
+    );
 
-    expect(currentCount.count).toEqual(1)
-  })
+    expect(mintAccountInfo?.lamports).toBeGreaterThan(0);
+  });
 
-  it('Increment Tokenvesting Again', async () => {
-    await program.methods.increment().accounts({ tokenvesting: tokenvestingKeypair.publicKey }).rpc()
+  it('should creat an employee vesting account', async () => {
+    const startTimeNumber = 0;
+    const endTimeNumber = 100;
+    const cliffTimeNumber = 100;
+    const amountNumber = 10000;
 
-    const currentCount = await program.account.tokenvesting.fetch(tokenvestingKeypair.publicKey)
-
-    expect(currentCount.count).toEqual(2)
-  })
-
-  it('Decrement Tokenvesting', async () => {
-    await program.methods.decrement().accounts({ tokenvesting: tokenvestingKeypair.publicKey }).rpc()
-
-    const currentCount = await program.account.tokenvesting.fetch(tokenvestingKeypair.publicKey)
-
-    expect(currentCount.count).toEqual(1)
-  })
-
-  it('Set tokenvesting value', async () => {
-    await program.methods.set(42).accounts({ tokenvesting: tokenvestingKeypair.publicKey }).rpc()
-
-    const currentCount = await program.account.tokenvesting.fetch(tokenvestingKeypair.publicKey)
-
-    expect(currentCount.count).toEqual(42)
-  })
-
-  it('Set close the tokenvesting account', async () => {
     await program.methods
-      .close()
+      .createEmployeeAccount(
+        new BN(startTimeNumber),
+        new BN(endTimeNumber),
+        new BN(cliffTimeNumber),
+        new BN(amountNumber)
+      )
       .accounts({
-        payer: payer.publicKey,
-        tokenvesting: tokenvestingKeypair.publicKey,
+        beneficiary: beneficiaryKeypair.publicKey,
+        vestingAccount: vestingAccountPublicKey,
       })
-      .rpc()
+      .rpc({
+        commitment: 'confirmed',
+        skipPreflight: true,
+      });
 
-    // The account should no longer exist, returning null.
-    const userAccount = await program.account.tokenvesting.fetchNullable(tokenvestingKeypair.publicKey)
-    expect(userAccount).toBeNull()
-  })
-})
+    const seeds = [
+      Buffer.from('employee_vesting'),
+      beneficiaryKeypair.publicKey.toBuffer(),
+      vestingAccountPublicKey.toBuffer(),
+    ];
+
+    const [employeeAccountPublicKey] = PublicKey.findProgramAddressSync(
+      seeds,
+      program.programId
+    );
+
+    const employeeAccount = await program.account.employeeAccount.fetch(
+      employeeAccountPublicKey
+    );
+
+    expect(employeeAccount.beneficiary.toBase58()).toBe(
+      beneficiaryKeypair.publicKey.toBase58()
+    );
+    expect(employeeAccount.vestingAccount.toBase58()).toBe(
+      vestingAccountPublicKey.toBase58()
+    );
+    expect(employeeAccount.startTime.eq(new BN(startTimeNumber))).toBeTruthy();
+    expect(employeeAccount.endTime.eq(new BN(endTimeNumber))).toBeTruthy();
+    expect(employeeAccount.cliffTime.eq(new BN(cliffTimeNumber))).toBeTruthy();
+    expect(employeeAccount.totalAmount.eq(new BN(amountNumber))).toBeTruthy();
+    expect(employeeAccount.totalWithdrawn.eq(new BN(0))).toBeTruthy();
+  });
+
+  it("should claim the employee's vested token", async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const initialEmployeeAccount = await program2.account.employeeAccount.fetch(
+      employeeAccountPublicKey
+    );
+
+    expect(initialEmployeeAccount.totalWithdrawn.eq(new BN(0))).toBeTruthy();
+
+    const currentClock = await banksClient.getClock();
+    context.setClock(
+      new Clock(
+        currentClock.slot,
+        currentClock.epochStartTimestamp,
+        currentClock.epoch,
+        currentClock.leaderScheduleEpoch,
+        1000n
+      )
+    );
+
+    await program2.methods
+      .claimToken(COMPANY_NAME)
+      .accounts({
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .rpc({
+        commitment: 'confirmed',
+      });
+
+    const employeeAccount = await program2.account.employeeAccount.fetch(
+      employeeAccountPublicKey
+    );
+
+    expect(
+      employeeAccount.totalWithdrawn.eq(employeeAccount.totalAmount)
+    ).toBeTruthy();
+  });
+});

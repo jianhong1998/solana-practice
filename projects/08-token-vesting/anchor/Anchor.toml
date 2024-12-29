@@ -6,14 +6,17 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-tokenvesting = "coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF"
+tokenvesting = "6akMTEYy5JS8h5hpk69WtyXqvrLsAfkn7sbKdwRh3h6w"
+
+[programs.devnet]
+tokenvesting = "6akMTEYy5JS8h5hpk69WtyXqvrLsAfkn7sbKdwRh3h6w"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
 cluster = "Localnet"
-wallet = "~/.config/solana/id.json"
+wallet = "~/.config/solana/local-id.json"
 
 [scripts]
 test = "../node_modules/.bin/jest --preset ts-jest"

@@ -1,4 +1,4 @@
-PROJECT_NAME = "07-swap-program"
+PROJECT_NAME = "08-token-vesting"
 
 up/build:
 	@docker compose \
@@ -23,3 +23,9 @@ down/clean:
 
 clean-image:
 	@docker image prune -f
+
+solana/set/dev:
+	@solana config set -ud -k ~/.config/solana/devnet-id.json
+
+solana/set/local:
+	@solana config set -ul -k ~/.config/solana/local-id.json
