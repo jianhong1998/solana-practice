@@ -1,4 +1,4 @@
-PROJECT_NAME = "08-token-vesting"
+PROJECT_NAME = "09-token-lottery"
 
 up/build:
 	@docker compose \
