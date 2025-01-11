@@ -129,4 +129,7 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+bootcamp-repo
+bootcamp-repo/**/*
+
 **/.DS_Store
