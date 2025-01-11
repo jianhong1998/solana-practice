@@ -29,3 +29,15 @@ solana/set/dev:
 
 solana/set/local:
 	@solana config set -ul -k ~/.config/solana/local-id.json
+
+test:
+	@cd anchor && \
+		IS_TESTING_ON_CHAIN=false anchor test --skip-local-validator --skip-deploy
+
+test/onchain:
+	@cd anchor && \
+		IS_TESTING_ON_CHAIN=true anchor test --skip-local-validator
+
+test/onchain/skip-deploy:
+	@cd anchor && \
+		IS_TESTING_ON_CHAIN=true anchor test --skip-local-validator --skip-deploy

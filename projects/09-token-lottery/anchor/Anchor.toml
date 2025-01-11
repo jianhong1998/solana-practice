@@ -6,14 +6,14 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-token_lottery = "6z68wfurCMYkZG51s1Et9BJEd9nJGUusjHXNt4dGbNNF"
+token_lottery = "6raAatS4bs7rLZbBegRAczMnR7RzRpb2SYr9BPJJCqdC"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
 cluster = "Localnet"
-wallet = "~/.config/solana/id.json"
+wallet = "./tests/fixtures/keypairs/program-owner-id.json"
 
 [scripts]
 test = "../node_modules/.bin/jest --preset ts-jest"
