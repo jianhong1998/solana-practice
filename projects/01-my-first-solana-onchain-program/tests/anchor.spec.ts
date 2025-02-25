@@ -1,5 +1,10 @@
 import * as anchor from '@coral-xyz/anchor';
-import { Keypair, Transaction } from '@solana/web3.js';
+import {
+  clusterApiUrl,
+  Connection,
+  Keypair,
+  Transaction,
+} from '@solana/web3.js';
 import BN from 'bn.js';
 import IDL from '../target/idl/favorites.json';
 import { Favorites } from '../target/types/favorites';
@@ -20,31 +25,31 @@ describe('Test', () => {
   });
 
   it('should be able to execute', async () => {
-    // const instruction = await program.methods
-    //   .setFavouritesKim(new BN(1), 'Blue', ['coding'])
-    //   .accounts({
-    //     user: userKeypair.publicKey,
-    //   })
-    //   .signers([userKeypair])
-    //   .instruction();
-
-    // const blockhashObj = await program.provider.connection.getLatestBlockhash();
-
-    // const transaction = new Transaction({
-    //   blockhash: blockhashObj.blockhash,
-    //   lastValidBlockHeight: blockhashObj.lastValidBlockHeight,
-    // }).add(instruction);
-
-    // const transactionId = await program.provider.connection.sendTransaction(
-    //   transaction,
-    //   [userKeypair]
-    // );
-
-    const transactionId = await program.methods
-      .setFavouritesKim(new BN(1), 'blue', ['coding'])
-      .accounts({ user: userKeypair.publicKey })
+    const instruction = await program.methods
+      .setFavouritesKim(new BN(1), 'Blue', ['coding'])
+      .accounts({
+        user: userKeypair.publicKey,
+      })
       .signers([userKeypair])
-      .rpc();
+      .instruction();
+
+    const connection = new Connection(clusterApiUrl('devnet'));
+    const blockhashObj = await connection.getLatestBlockhash();
+
+    const transaction = new Transaction({
+      blockhash: blockhashObj.blockhash,
+      lastValidBlockHeight: blockhashObj.lastValidBlockHeight,
+    }).add(instruction);
+
+    const transactionId = await connection.sendTransaction(transaction, [
+      userKeypair,
+    ]);
+
+    // const transactionId = await program.methods
+    //   .setFavouritesKim(new BN(1), 'blue', ['coding'])
+    //   .accounts({ user: userKeypair.publicKey })
+    //   .signers([userKeypair])
+    //   .rpc();
 
     console.log({ transactionId });
   });

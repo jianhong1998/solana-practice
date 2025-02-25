@@ -1,4 +1,5 @@
 [toolchain]
+channel = "1.79.0"
 
 [features]
 resolution = true
@@ -12,7 +13,7 @@ url = "https://api.apr.dev"
 
 [provider]
 cluster = "Localnet"
-wallet = "~/.config/solana/id.json"
+wallet = "./tests/fixtures/keypairs/program-owner-id.json"
 
 [scripts]
 test = "pnpm exec jest --preset ts-jest"

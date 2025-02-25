@@ -10,5 +10,8 @@ COPY ./package.json ./
 COPY ./pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
+# COPY ./package*.json ./
+# RUN npm ci
+
 COPY . .
 CMD [ "pn", "run", "dev" ]

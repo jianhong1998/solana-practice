@@ -1,4 +1,6 @@
 PROJECT_NAME = "10-defi"
+# Must be the keypair of `./tests/fixtures/keypairs/program-owner-id.json`
+PROGRAM_OWNER_PUBKEY = "Po8d1QjUKezSQV9AR3g5AYDQRAZNCEksPRWZWYgy7j1"
 
 up/build:
 	@docker compose \
@@ -31,13 +33,22 @@ solana/set/local:
 	@solana config set -ul -k ~/.config/solana/local-id.json
 
 test:
-	@cd anchor && \
 		IS_TESTING_ON_CHAIN=false anchor test --skip-local-validator --skip-deploy
 
 test/onchain:
-	@cd anchor && \
 		IS_TESTING_ON_CHAIN=true anchor test --skip-local-validator
 
 test/onchain/skip-deploy:
-	@cd anchor && \
 		IS_TESTING_ON_CHAIN=true anchor test --skip-local-validator --skip-deploy
+
+deploy:
+	@anchor build && \
+		anchor deploy
+
+deploy/with-airdrop:
+	@solana config set -ul -k ~/.config/solana/local-id.json && \
+		solana airdrop 10 ${PROGRAM_OWNER_PUBKEY} && \
+		$(MAKE) deploy
+
+anchor/build:
+		anchor build
