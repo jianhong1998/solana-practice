@@ -1,17 +1,18 @@
+[toolchain]
+
 [features]
-seeds = false
+resolution = true
 skip-lint = false
 
 [programs.localnet]
-favorites = "x4YCBaw3sqJGA9bMwZZPxFyWDGKy7twFimBjT754RQ6"
+favorites = "FoHEA1PZ38S42vfDuyCr9CdqWWTyc6vVbUuWu2smZPkP"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
 cluster = "Localnet"
-wallet = "~/.config/solana/id.json"
+wallet = "~/.config/solana/local-id.json"
 
 [scripts]
-test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
-client = "yarn run ts-node client/*.ts"
+test = "./node_modules/.bin/jest --preset ts-jest"

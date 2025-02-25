@@ -1,0 +1,17 @@
+FROM node:20-slim
+
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
+WORKDIR /apps/crud-dapp
+
+COPY ./package.json ./
+COPY ./pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
+
+# COPY ./package*.json ./
+# RUN npm ci
+
+COPY . .
+CMD [ "pn", "run", "dev" ]

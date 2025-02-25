@@ -1,0 +1,19 @@
+[toolchain]
+channel = "1.79.0"
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.localnet]
+defi = "Bo5oDTYmi3H7KmPPN3xPrtii6BUdQZAbboAgQZhdXUt6"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "Localnet"
+wallet = "./tests/fixtures/keypairs/program-owner-id.json"
+
+[scripts]
+test = "pnpm exec jest --preset ts-jest"
