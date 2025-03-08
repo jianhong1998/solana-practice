@@ -6,7 +6,7 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-stablecoin = "coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF"
+stablecoin = "3cXYz6evVwR2PYHqLgN6eY7TKhkqKep6eYrMFkBY9khc"
 
 [registry]
 url = "https://api.apr.dev"
@@ -24,6 +24,10 @@ shutdown_wait = 2000
 upgradeable = false
 
 [test.validator]
-bind_address = "127.0.0.1"
-ledger = ".anchor/test-ledger"
+bind_address = "0.0.0.0"
+url = "https://api.mainnet-beta.solana.com"
+ledger = "../solana-ledger"
 rpc_port = 8899
+
+[[test.validator.clone]]
+address = "7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE"

@@ -62,10 +62,10 @@ deploy/dev:
 		anchor deploy --provider.cluster devnet --provider.wallet ${PROJECT_DEPLOY_KEY}
 
 airdrop/program-owner:
-	@solana airdrop 10 8SFmQipCrfKr9sZQarTD71zxa56z41Qv7LJDwBeEYWQ1
+	@solana airdrop 10 HjCago7pTq3JrbGEmhRTJuKNafN2ncz83RGSa4BAHafb
 
 airdrop/fee-payer:
-	@solana airdrop 10 FPhqPEd6qKRJNaLYJ2rLimYnSHMrzPxqq1Mwe6RFMZQA
+	@solana airdrop 10 J7C9EZFejJEphz4BT35dBqs4PeeTuCxXGzGMgpATBTBo
 
 deploy/with-airdrop:
 	@$(MAKE) airdrop/program-owner && \

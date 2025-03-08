@@ -1,70 +1,43 @@
 #![allow(clippy::result_large_err)]
 
-use anchor_lang::prelude::*;
+pub mod constants;
+pub mod instructions;
+pub mod states;
 
-declare_id!("coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF");
+use anchor_lang::prelude::*;
+use instructions::*;
+
+declare_id!("3cXYz6evVwR2PYHqLgN6eY7TKhkqKep6eYrMFkBY9khc");
 
 #[program]
 pub mod stablecoin {
-    use super::*;
+  use super::*;
 
-  pub fn close(_ctx: Context<CloseStablecoin>) -> Result<()> {
-    Ok(())
+  pub fn init_config(context: Context<InitConfig>) -> Result<()> {
+    process_init_config(context)
   }
 
-  pub fn decrement(ctx: Context<Update>) -> Result<()> {
-    ctx.accounts.stablecoin.count = ctx.accounts.stablecoin.count.checked_sub(1).unwrap();
-    Ok(())
+  pub fn update_config(context: Context<UpdateConfig>, min_health_factor: u64) -> Result<()> {
+    process_update_config(context, min_health_factor)
   }
 
-  pub fn increment(ctx: Context<Update>) -> Result<()> {
-    ctx.accounts.stablecoin.count = ctx.accounts.stablecoin.count.checked_add(1).unwrap();
-    Ok(())
+  pub fn deposit_collateral_and_mint_token(
+    context: Context<DepositCollateralAndMintToken>,
+    amount_collateral: u64,
+    amount_to_mint: u64,
+  ) -> Result<()> {
+    process_deposit_collateral_and_mint_token(context, amount_collateral, amount_to_mint)
   }
 
-  pub fn initialize(_ctx: Context<InitializeStablecoin>) -> Result<()> {
-    Ok(())
+  pub fn redeem_collateral_and_burn_token(
+    context: Context<RedeemCollateralAndBurnToken>,
+    collateral_amount: u64,
+    burn_amount: u64,
+  ) -> Result<()> {
+    process_redeem_collateral_and_burn_token(context, collateral_amount, burn_amount)
   }
 
-  pub fn set(ctx: Context<Update>, value: u8) -> Result<()> {
-    ctx.accounts.stablecoin.count = value.clone();
-    Ok(())
+  pub fn liquidate(context: Context<Liquidate>, amount_to_burn: u64) -> Result<()> {
+    process_liquidate(context, amount_to_burn)
   }
-}
-
-#[derive(Accounts)]
-pub struct InitializeStablecoin<'info> {
-  #[account(mut)]
-  pub payer: Signer<'info>,
-
-  #[account(
-  init,
-  space = 8 + Stablecoin::INIT_SPACE,
-  payer = payer
-  )]
-  pub stablecoin: Account<'info, Stablecoin>,
-  pub system_program: Program<'info, System>,
-}
-#[derive(Accounts)]
-pub struct CloseStablecoin<'info> {
-  #[account(mut)]
-  pub payer: Signer<'info>,
-
-  #[account(
-  mut,
-  close = payer, // close account and return lamports to payer
-  )]
-  pub stablecoin: Account<'info, Stablecoin>,
-}
-
-#[derive(Accounts)]
-pub struct Update<'info> {
-  #[account(mut)]
-  pub stablecoin: Account<'info, Stablecoin>,
-}
-
-#[account]
-#[derive(InitSpace)]
-pub struct Stablecoin {
-  count: u8,
 }
